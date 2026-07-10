@@ -1,25 +1,23 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[10]:
-
-
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler , PolynomialFeatures
 from sklearn.metrics import accuracy_score
-import sklearn
+from sklearn.ensemble import RandomForestClassifier
 import joblib
 from pathlib import Path
-
-
-# In[11]:
-
-
-X = pd.read_csv('C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Heart attack and diseases model\\backend\\database\\disease_prediction _edited.csv')
-Y = pd.read_csv('C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Heart attack and diseases model\\backend\\database\\result.csv')
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.layers import Dense, Input, Dropout
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.losses import MeanSquaredError, BinaryCrossentropy
+from tensorflow.keras.activations import sigmoid
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.regularizers import l2
+import pandas as pd
+#data preprocessing and splitting the data into training, validation, and test sets
+df = pd.read_csv('C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Heart attack and diseases model\\backend\\database\\disease_prediction _edited.csv')
 """ male = 1 
     female = 0
     yes = 1
@@ -29,13 +27,9 @@ Y = pd.read_csv('C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\proje
           medium = 1
           high = 2
 """
+X = df.drop(columns=['result']) 
+Y = df['result']
 scaler = StandardScaler()
-X = scaler.fit_transform(X)
-
-
-# In[12]:
-
-
 x_train ,x_temp ,y_train ,y_temp = train_test_split(
     X ,Y,
     test_size=0.3,
@@ -47,39 +41,74 @@ x_val ,x_test ,y_val ,y_test = train_test_split(
     random_state=42,
 )
 
-
-# In[13]:
-
-
-print(x_train.shape ,y_train.shape)
-print(x_val.shape ,y_val.shape)
-print(x_test.shape ,y_test.shape)
-
-
-# In[14]:
-
-
-model = LogisticRegression()
-model.fit(x_train ,y_train)
+#fitting the scaler on the training data and transforming the training, validation, and test sets
+unimportant_cols = ['gender', 'alcohol_consumption', 'heart_rate']
+scaled_x_train = scaler.fit_transform(x_train[['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp', 'diastolic_bp', 'bmi', 'MAP', 'RPP Rate Pressure Product', 'PP Pulse Pressure', 'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction', 'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']])
+nonscaled_x_train = x_train.drop(columns=['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp', 'diastolic_bp', 'heart_rate', 'bmi', 'MAP', 'RPP Rate Pressure Product', 'PP Pulse Pressure', 'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction', 'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']  + unimportant_cols)
+scaled_x_val = scaler.transform(x_val[['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp', 'diastolic_bp', 'bmi', 'MAP', 'RPP Rate Pressure Product', 'PP Pulse Pressure', 'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction', 'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']])
+nonscaled_x_val = x_val.drop(columns=['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp', 'diastolic_bp', 'heart_rate', 'bmi', 'MAP', 'RPP Rate Pressure Product', 'PP Pulse Pressure', 'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction', 'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index'] + unimportant_cols)
+scaled_x_test = scaler.transform(x_test[['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp', 'diastolic_bp', 'bmi', 'MAP', 'RPP Rate Pressure Product', 'PP Pulse Pressure', 'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction', 'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']])
+nonscaled_x_test = x_test.drop(columns=['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp', 'diastolic_bp', 'heart_rate', 'bmi', 'MAP', 'RPP Rate Pressure Product', 'PP Pulse Pressure', 'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction', 'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index'] + unimportant_cols)
+final_x_train = np.concatenate((scaled_x_train, nonscaled_x_train), axis=1)
+final_x_val = np.concatenate((scaled_x_val, nonscaled_x_val), axis=1)
+final_x_test = np.concatenate((scaled_x_test, nonscaled_x_test), axis=1)
 
 
-# In[15]:
+'''
+rf = RandomForestClassifier()
+rf.fit(final_x_train, y_train)
+importances = rf.feature_importances_
+scaled_features = ['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp',
+                   'diastolic_bp', 'heart_rate', 'bmi', 'MAP',
+                   'RPP Rate Pressure Product', 'PP Pulse Pressure',
+                   'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction',
+                   'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']
+nonscaled_features = nonscaled_x_train.columns.tolist()
+feature_names = scaled_features + nonscaled_features
+df_importance = pd.DataFrame({'Feature': feature_names, 'Importance': importances})
+df_importance = df_importance.sort_values(by='Importance', ascending=False)
+
+print(df_importance)
+'''
 
 
-print(model.score(x_test , y_test))
+#model building and training using a Sequential model with Dense layers and Dropout for regularization
+model = Sequential([
+    Dense(16 ,input_shape=(final_x_train.shape[1],) ,activation='relu', kernel_regularizer=l2(0.01), name=("L1")),
+    Dropout(0.4),
+    Dense(4 ,input_shape=(16,) ,activation='relu', name=("L2")),
+    Dropout(0.3),
+    Dense(1 ,input_shape=(4,) ,activation='sigmoid', name=("output"))
+])
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+    loss=BinaryCrossentropy(from_logits=True), 
+    metrics=['accuracy', tf.keras.metrics.Recall()] 
+)
 
+early_stop = EarlyStopping(
+    monitor='val_loss',
+    patience=10,
+    restore_best_weights=True
+)
 
-# In[16]:
-
-
+history = model.fit(
+    final_x_train, y_train,
+    validation_data=(final_x_val, y_val),
+    epochs=100,       
+    batch_size=2, 
+    callbacks=[early_stop],     
+    verbose=1
+)
+print("Model evaluation on test data:")
+test_loss, test_accuracy, test_recall = model.evaluate(final_x_test, y_test)
+print(f"Test Loss: {test_loss:.4f}")
+print(f"Test Accuracy: {test_accuracy:.4f}")
+print(f"Test Recall: {test_recall:.4f}")
 BASE_DIR = Path("Heart attack and diseases model").resolve().parent.parent
 model_path = BASE_DIR / "backend" / "disease_model.joblib"
 joblib.dump(model, model_path)
 print(f"the model has saved in: {model_path}")
 joblib.dump(scaler, BASE_DIR / "backend" / "scaler.joblib")
-
-# In[ ]:
-
-
-
+model.save('heart_disease_model.keras')
 

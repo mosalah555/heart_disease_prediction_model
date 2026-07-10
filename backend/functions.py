@@ -34,3 +34,19 @@ def CardiacAdiposityProxy(bmi, heart_rate):
 
 def CardiovascularStressIndex(Map, heart_rate):
     return float(Map) * float(heart_rate)
+def get_float_input(prompt):
+    while True:
+        try:
+            value = float(input(prompt))
+            return value 
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+def get_yes_no(prompt):
+    """Repeatedly ask until the user gives a valid 'yes' or 'no'."""
+    while True:
+        answer = input(prompt).strip().lower()
+        if answer in ("yes", "no"):
+            return answer  
+        else:
+            print("Invalid input. Please enter 'yes' or 'no'.")
+            continue
