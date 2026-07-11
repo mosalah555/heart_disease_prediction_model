@@ -50,7 +50,7 @@ while True:
           cardiovascular_stress_index]
     input_df = pd.DataFrame([values], columns=columns)
     scale_cols = ['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp',
-              'diastolic_bp', 'heart_rate', 'bmi', 'MAP',
+              'diastolic_bp', 'bmi', 'MAP',
               'RPP Rate Pressure Product', 'PP Pulse Pressure',
               'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction',
               'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']
