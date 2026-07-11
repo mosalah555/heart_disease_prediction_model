@@ -49,16 +49,15 @@ while True:
           smoking_hypertension_interaction, cardiac_adiposity_proxy,
           cardiovascular_stress_index]
     input_df = pd.DataFrame([values], columns=columns)
+    unimportant_cols = ['gender', 'alcohol_consumption', 'heart_rate']
     scale_cols = ['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp',
               'diastolic_bp', 'bmi', 'MAP',
               'RPP Rate Pressure Product', 'PP Pulse Pressure',
               'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction',
               'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']
     scaled_input = scaler.transform(input_df[scale_cols])         
-    nonscaled_input = input_df.drop(columns=scale_cols).values   
+    nonscaled_input = input_df.drop(columns=scale_cols + unimportant_cols).values   
     final_input = np.concatenate((scaled_input, nonscaled_input), axis=1) 
-    final_input = final_input.drop(columns=['gender', 'alcohol_consumption', 'heart_rate'])
-    
     
     output = model.predict(final_input)
     print("Model output:", output)
