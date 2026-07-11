@@ -57,7 +57,7 @@ while True:
     scaled_input = scaler.transform(input_df[scale_cols])         
     nonscaled_input = input_df.drop(columns=scale_cols).values   
     final_input = np.concatenate((scaled_input, nonscaled_input), axis=1) 
-    final_input = df.drop(columns=['gender', 'alcohol_consumption', 'heart_rate'])
+    final_input = final_input.drop(columns=['gender', 'alcohol_consumption', 'heart_rate'])
     
     
     output = model.predict(final_input)
