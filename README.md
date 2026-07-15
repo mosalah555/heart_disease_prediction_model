@@ -65,6 +65,8 @@ Then open the local URL shown in your terminal (usually `http://localhost:8501`)
 
 ⚠️ This tool is for **educational purposes only** and is **not** a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider regarding any medical condition.
 
-## License
+## MIT License
+## photos from the program
+<img width="1920" height="1020" alt="Screenshot 2026-07-16 002003" src="https://github.com/user-attachments/assets/3a957401-a3d4-47fb-ba5c-ffa40953a23a" />
+<img width="1920" height="1020" alt="Screenshot 2026-07-16 001806" src="https://github.com/user-attachments/assets/fa0ce9bb-8f94-4e1a-a7c4-749a9ce86a9c" />
 
-This project is open for personal and educational use.
