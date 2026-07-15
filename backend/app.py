@@ -11,6 +11,8 @@ NN_model_path = BASE_DIR / "NN_model.joblib"
 NN_model = joblib.load(NN_model_path)
 rf_model_path = BASE_DIR / "random_forest_model.joblib"
 rf_model = joblib.load(rf_model_path)
+rf_scaler_path = BASE_DIR / "random_forest_scaler.joblib"
+rf_scaler = joblib.load(rf_scaler_path)
 
 st.title("Heart Attack and Disease Risk Predictor")
 st.write("Enter your health information below to check your risk of heart disease.")
@@ -56,17 +58,26 @@ if st.button("Predict"):
               'RPP Rate Pressure Product', 'PP Pulse Pressure',
               'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction',
               'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']
-    scaled_input = scaler.transform(input_df[scale_cols])         
-    nonscaled_input = input_df.drop(columns=scale_cols + unimportant_cols).values   
-    final_input = np.concatenate((scaled_input, nonscaled_input), axis=1) 
-    output_rf = rf_model.predict(final_input)
-    output_NN = NN_model.predict(final_input)
+    nn_scaled_input = scaler.transform(input_df[scale_cols])         
+    nn_nonscaled_input = input_df.drop(columns=scale_cols + unimportant_cols).values   
+    nn_input_final = np.concatenate((nn_scaled_input, nn_nonscaled_input), axis=1) 
+   
+    mapping = {"low":0 ,"medium":1 ,"high":2}
+    input_df["physical_activity"] = input_df["physical_activity"].map(mapping)
+    rf_input = pd.get_dummies(input_df, columns=["physical_activity"])
+    rf_scaled_input = scaler.transform(rf_input[scale_cols])
+    rf_nonscaled_input = rf_input.drop(columns=scale_cols + unimportant_cols).values
+    rf_input_final = np.concatenate((rf_scaled_input, rf_nonscaled_input), axis=1)
+
+
+    output_rf = rf_model.predict(rf_input_final)
+    output_NN = NN_model.predict(nn_input_final)
     st.subheader("Results")
     if output_NN[0][0] > 0.5:
        st.error("Neural Network: High risk of heart disease.")
     else:
        st.success("Neural Network: Low risk of heart disease.")
-    if output_rf[0][0] > 0.5:
+    if output_rf[0] > 0.5:
        st.error("Random Forest: High risk of heart disease.")
     else:
        st.success("Random Forest: Low risk of heart disease.")
