@@ -53,14 +53,14 @@ param_dist = {
 
 rf = RandomForestClassifier(random_state=42)
 search = RandomizedSearchCV(rf, param_dist, n_iter=50, cv=5,
-                             scoring='recall', n_jobs=-1, random_state=42)
-search.fit(x_train, y_train)
+                             scoring='recall', n_jobs=-1, random_state=42,verbose=2)
+search.fit(final_x_train, y_train)
 print(search.best_params_)
 best_model = search.best_estimator_
 
-model = RandomForestClassifier(n_estimators=100, min_samples_split=10, min_samples_leaf=2, max_features='log2', max_depth=None, class_weight=None).fit(x_train ,y_train)
-y_pred_val = model.predict(x_val)
-y_pred_test = model.predict(x_test)
+model = RandomForestClassifier(**search.best_params_, random_state=42).fit(final_x_train ,y_train)
+y_pred_val = model.predict(final_x_val)
+y_pred_test = model.predict(final_x_test)
 print(f"Model accuracy on validation data: {accuracy_score(y_pred_val, y_val)}")
 print(f"Model recall on validation data: {recall_score(y_pred_val, y_val)}")
 print(f"Model accuracy on test data:{accuracy_score(y_pred_test, y_test)}")

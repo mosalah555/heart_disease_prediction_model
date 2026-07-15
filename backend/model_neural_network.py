@@ -90,4 +90,3 @@ joblib.dump(model, model_path)
 print(f"the model has saved in: {model_path}")
 joblib.dump(scaler, BASE_DIR / "backend" / "NN_scaler.joblib")
 model.save('NN_model.keras')
-
