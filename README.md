@@ -23,7 +23,7 @@ A Streamlit web application that predicts a person's risk of heart disease using
 
 | Model          | Accuracy | Recall |
 |----------------|----------|--------|
-| Neural Network | TBD      | TBD    |
+| Neural Network | 86%      | 87.34% |
 | Random Forest  | 87.3%    | 86.6%  |
 
 > Fill in the Neural Network's test accuracy/recall once you have the final numbers.
