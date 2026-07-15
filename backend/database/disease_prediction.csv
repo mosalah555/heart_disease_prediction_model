@@ -1,4 +1,4 @@
-patient_id,age,gender,glucose_mg_dl,cholesterol_mg_dl,systolic_bp,diastolic_bp,bmi,heart_rate,smoking,alcohol_consumption,1,family_history,disease
+ ,age,gender,glucose_mg_dl,cholesterol_mg_dl,systolic_bp,diastolic_bp,bmi,heart_rate,smoking,alcohol_consumption,1,family_history,disease
 1,32,Male,101,235,152,79,28.5,73,No,Yes,Low,Yes,Yes
 2,31,Male,124,191,134,77,33.9,71,No,Yes,Low,Yes,Yes
 3,45,Male,57,141,114,71,27.2,79,Yes,Yes,Low,No,No

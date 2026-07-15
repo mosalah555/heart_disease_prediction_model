@@ -3,29 +3,30 @@ import numpy as np
 import pandas as pd
 import joblib
 from pathlib import Path
+import streamlit as st
 BASE_DIR = Path("Heart attack and diseases model").resolve().parent
-scaler_path = BASE_DIR / "scaler.joblib"
+scaler_path = BASE_DIR / "NN_scaler.joblib"
 scaler = joblib.load(scaler_path)
-BASE_DIR = Path("Heart attack and diseases model").resolve().parent
-model_path = BASE_DIR / "disease_model.joblib"
-model = joblib.load(model_path)
-while True:
-    try:
-        age = functions.get_float_input("Enter your age: ")
-        gender = functions.get_float_input("Enter your gender (Male = 1/Female = 0): ")
-        glucose_mg_dl = functions.get_float_input("Enter your glucose level (mg/dL): ")
-        cholesterol_mg_dl = functions.get_float_input("Enter your cholesterol level (mg/dL): ")
-        systolic_bp = functions.get_float_input("Enter your systolic blood pressure (mmHg): ")
-        diastolic_bp = functions.get_float_input("Enter your diastolic blood pressure (mmHg): ")
-        bmi = functions.get_float_input("Enter your BMI: ")
-        heart_rate = functions.get_float_input("Enter your heart rate (bpm): ")
-        smoking_status = functions.get_float_input("Enter your smoking status (Smoker = 1/Non-Smoker = 0): ")
-        alcohol_consumption = functions.get_float_input("Enter your alcohol consumption (Yes = 1/No = 0): ")
-        physical_activity = functions.get_float_input("Enter your physical activity level (high = 2 /medium = 1/ low = 0): ")
-        family_history = functions.get_float_input("Enter your family history of heart disease (Yes = 1/No = 0): ")
-    except ValueError:
-        print("Invalid input. Please enter a valid number.")
+NN_model_path = BASE_DIR / "NN_model.joblib"
+NN_model = joblib.load(NN_model_path)
+rf_model_path = BASE_DIR / "random_forest_model.joblib"
+rf_model = joblib.load(rf_model_path)
 
+st.title("Heart Attack and Disease Risk Predictor")
+st.write("Enter your health information below to check your risk of heart disease.")
+age = st.number_input("Age", min_value=1, max_value=120, value=30)
+gender = st.selectbox("Gender", options=[("Male", 1), ("Female", 0)], format_func=lambda x: x[0])[1]
+glucose_mg_dl = st.number_input("Glucose level (mg/dL)", min_value=0.0, value=90.0)
+cholesterol_mg_dl = st.number_input("Cholesterol level (mg/dL)", min_value=0.0, value=180.0)
+systolic_bp = st.number_input("systolic blood pressure (mmHg)", min_value=0.0, value=80.0)
+diastolic_bp = st.number_input("Diastolic blood pressure (mmHg)", min_value=0.0, value=80.0)
+bmi = st.number_input("BMI", min_value=0.0, value=22.0)
+heart_rate = st.number_input("Heart rate (bpm)", min_value=0.0, value=70.0)
+smoking_status = st.selectbox("Smoking status", options=[("Smoker", 1), ("Non-Smoker", 0)], format_func=lambda x: x[0])[1]
+alcohol_consumption = st.selectbox("Alcohol consumption", options=[("Yes", 1), ("No", 0)], format_func=lambda x: x[0])[1]
+physical_activity = st.selectbox("Physical activity level", options=[("High", 2), ("Medium", 1), ("Low", 0)], format_func=lambda x: x[0])[1]
+family_history = st.selectbox("Family history of heart disease", options=[("Yes", 1), ("No", 0)], format_func=lambda x: x[0])[1]
+if st.button("Predict"):
     Map = functions.MAP(systolic_bp, diastolic_bp)
     Rpp = functions.RPP(systolic_bp, heart_rate)
     Pp = functions.PP(systolic_bp, diastolic_bp)
@@ -58,17 +59,14 @@ while True:
     scaled_input = scaler.transform(input_df[scale_cols])         
     nonscaled_input = input_df.drop(columns=scale_cols + unimportant_cols).values   
     final_input = np.concatenate((scaled_input, nonscaled_input), axis=1) 
-    
-    output = model.predict(final_input)
-    print("Model output:", output)
-    if output[0][0] > 0.5:
-       print("The model predicts a high risk of heart disease.")
+    output_rf = rf_model.predict(final_input)
+    output_NN = NN_model.predict(final_input)
+    st.subheader("Results")
+    if output_NN[0][0] > 0.5:
+       st.error("Neural Network: High risk of heart disease.")
     else:
-       print("The model predicts a low risk of heart disease.")
-    diseasation = functions.get_yes_no("Do you want to run the model again? (yes/no): ")
-    if diseasation == "no":
-        print("Exiting the program.")
-        break
-    elif diseasation == "yes":
-        print("Restarting the model...")
-        continue
+       st.success("Neural Network: Low risk of heart disease.")
+    if output_rf[0][0] > 0.5:
+       st.error("Random Forest: High risk of heart disease.")
+    else:
+       st.success("Random Forest: Low risk of heart disease.")
