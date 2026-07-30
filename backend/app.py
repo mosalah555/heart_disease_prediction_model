@@ -4,7 +4,7 @@ import pandas as pd
 import joblib
 from pathlib import Path
 import streamlit as st
-BASE_DIR = Path("Heart attack and diseases model").resolve().parent
+BASE_DIR = Path(__file__).resolve().parent
 scaler_path = BASE_DIR / "NN_scaler.joblib"
 scaler = joblib.load(scaler_path)
 NN_model_path = BASE_DIR / "NN_model.joblib"
