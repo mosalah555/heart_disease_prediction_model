@@ -1,71 +1,67 @@
 # Heart Attack and Disease Risk Predictor
 
-A Streamlit web application that predicts a person's risk of heart disease using **two different machine learning models**: a **Neural Network** and a **Random Forest Classifier**. The app takes in health metrics (age, blood pressure, cholesterol, BMI, lifestyle factors, etc.), engineers additional clinical features, and returns a risk prediction from both models for comparison.
+A Streamlit app that guesses your risk of heart disease using two different models — a Neural Network and a Random Forest — trained side by side so you can compare what each one thinks.
 
-## Features
+You plug in basic health numbers (age, blood pressure, cholesterol, BMI, smoking habits, etc.) and the app does the rest: it calculates a handful of extra clinical values behind the scenes, feeds everything into both models, and shows you both predictions at once.
 
-- Interactive web form to input patient health data
-- Automatic calculation of derived clinical indicators:
-  - MAP (Mean Arterial Pressure)
-  - RPP (Rate Pressure Product)
-  - PP (Pulse Pressure)
-  - Unhealthy Lifestyle Score
-  - Atherogenic Index Coefficient
-  - Smoking-Hypertension Interaction
-  - Cardiac Adiposity Proxy
-  - Cardiovascular Stress Index
-- Predicts heart disease risk using **two models**:
-  - **Neural Network (NN)**
-  - **Random Forest (RF)**
-- Displays both predictions side by side for comparison
+## What it actually does
 
-## Model Performance (Test Data)
+- Simple form where you type in your health data
+- Automatically works out some extra numbers that doctors actually use, like:
+  - Mean Arterial Pressure (MAP)
+  - Rate Pressure Product (RPP)
+  - Pulse Pressure (PP)
+  - An "unhealthy lifestyle" score
+  - Atherogenic index
+  - Smoking + hypertension interaction
+  - A cardiac adiposity proxy
+  - A cardiovascular stress index
+- Runs your data through both models and shows you what each one predicts, side by side
+
+## How good are the models?
 
 | Model          | Accuracy | Recall |
 |----------------|----------|--------|
 | Neural Network | 86%      | 87.34% |
 | Random Forest  | 87.3%    | 86.58% |
 
-## Project Structure
+Pretty close to each other, honestly — neither one clearly wins.
+
+## Files in here
 
 ```
 .
-├── app.py                     # Streamlit application
-├── functions.py                # Feature engineering helper functions
-├── NN_model.joblib              # Trained Neural Network model
-├── NN_scaler.joblib             # Scaler used for NN input features
-├── random_forest_model.joblib   # Trained Random Forest model
+├── app.py                     # the actual Streamlit app
+├── functions.py                # feature engineering helpers
+├── NN_model.joblib              # trained neural network
+├── NN_scaler.joblib             # scaler for the NN's inputs
+├── random_forest_model.joblib   # trained random forest
 └── README.md
 ```
 
-## Installation
+## How to run it
 
-1. Clone or download this repository.
-2. Install the required dependencies:
+First, install what you need:
 
 ```bash
 pip install streamlit numpy pandas joblib scikit-learn tensorflow --break-system-packages
 ```
 
-## Usage
-
-Run the Streamlit app from the project folder:
+Then just run:
 
 ```bash
 streamlit run app.py
 ```
 
-Then open the local URL shown in your terminal (usually `http://localhost:8501`) in your browser.
+It'll open a local link (usually `http://localhost:8501`) — click that and you're in.
 
-1. Enter the requested health information in the form.
-2. Click **Predict**.
-3. View the risk prediction from both the Neural Network and Random Forest models.
+1. Fill out the form with your health info
+2. Hit **Predict**
+3. Check what both models say
 
-## Disclaimer
+## Heads up
 
-⚠️ This tool is for **educational purposes only** and is **not** a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider regarding any medical condition.
-
-## MIT License
+⚠️ This is a learning project, not a medical tool. Don't use it to actually diagnose anything — talk to a real doctor for that.
 ## photos from the program
 <img width="1920" height="1020" alt="Screenshot 2026-07-16 002003" src="https://github.com/user-attachments/assets/3a957401-a3d4-47fb-ba5c-ffa40953a23a" />
 <img width="1920" height="1020" alt="Screenshot 2026-07-16 001806" src="https://github.com/user-attachments/assets/fa0ce9bb-8f94-4e1a-a7c4-749a9ce86a9c" />
