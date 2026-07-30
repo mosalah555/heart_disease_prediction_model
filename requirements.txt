@@ -1,9 +1,7 @@
+streamlit
 numpy
 pandas
+joblib
 scikit-learn
 tensorflow
-joblib
-streamlit
-flask
-flask-cors
-gunicorn
+
